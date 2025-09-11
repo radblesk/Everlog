@@ -41,7 +41,7 @@ Everlog is a **SwiftUI app** for iOS and watchOS that lets you log, track, and m
 1. Clone the repo:
 
 ```bash
-git clone https://github.com/radblesk/everlog.git
+git clone https://github.com/radblesk/Everlog.git
 ```
 
 2. Open `Everlog.xcodeproj` in Xcode.
