@@ -655,6 +655,12 @@ struct MacEditView: View {
             }
 
         }
+        .onAppear {
+            if mac.model.isEmpty {
+                isEditing = true
+                mac.model = "MacBook Air"
+            }
+        }
         .padding(.top, 50)
         .ignoresSafeArea(edges: .top)
         .scrollDismissesKeyboard(.interactively)
