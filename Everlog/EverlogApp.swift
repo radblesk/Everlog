@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct EverlogApp: App {
@@ -13,5 +14,6 @@ struct EverlogApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [Mac.self])
     }
 }
