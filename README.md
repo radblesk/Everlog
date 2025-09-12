@@ -22,9 +22,10 @@ Everlog is a **SwiftUI app** for iOS and watchOS that lets you log, track, and m
 ## Screenshots
 
 <!-- Replace these with actual screenshots -->
-
-![iOS screenshot](screenshots/ios_main.png)
-![watchOS screenshot](screenshots/watchos_main.png)
+<div>
+<img src="collection-view.jpeg" alt="iOS screenshot" width="300">
+<img src="detail-view.jpeg" alt="iOS screenshot" width="300">
+</div>
 
 ---
 
