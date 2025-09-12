@@ -30,26 +30,7 @@ struct MacsView: View {
                     ToolbarSpacer(.flexible, placement: .bottomBar)
                     ToolbarItem(placement: .bottomBar) {
                         Button("Add a Mac", systemImage: "plus") {
-                            let newMac = Mac(
-                                model: "MacBook Air",
-                                comments: "",
-                                currentCondition: "excelent",
-                                releaseDate: .distantPast,
-                                color: "silver",
-                                processor: "M4",
-                                memory: "16 GB",
-                                storage: "256 GB",
-                                displaySize: "13-inches",
-                                macOSVersion: "26.0",
-                                serialNumber: "",
-                                purchaseDate: .now,
-                                purchasePrice: 0.0,
-                                purchasedCondition: "new",
-                                warranty: "",
-                                warrantyExtended: false,
-                                appleCare: false,
-                                sold: false
-                            )
+                            let newMac = Mac(model: "", comments: "", currentCondition: "", releaseDate: .distantPast, color: "", processor: "", memory: "", storage: "", displaySize: "", macOSVersion: "", serialNumber: "", purchaseDate: .distantPast, purchasePrice: 0.0, purchasedCondition: "", warranty: "", warrantyExtended: false, appleCare: false, sold: false)
 
                             modelContext.insert(newMac)
 
