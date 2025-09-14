@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum NavigationOptions: Equatable, Hashable, Identifiable {
+enum NavigationOptions: Equatable, Hashable, Identifiable, Codable {
     case mac
     case iphone
     case ipad

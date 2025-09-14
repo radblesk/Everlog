@@ -46,7 +46,9 @@ struct DeviceDetailView: View {
                         Text("Serial Number")
                         Spacer()
                         Text(device.serialNumber)
-                            .textSelection(.enabled)
+                            #if os(iOS)
+                                .textSelection(.enabled)
+                            #endif
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -102,7 +104,9 @@ struct DeviceDetailView: View {
             }
         }
         .navigationTitle(device.macName)
-        .navigationSubtitle(device.color.capitalized)
+        #if os(iOS)
+            .navigationSubtitle(device.color.capitalized)
+        #endif
         .navigationBarTitleDisplayMode(.inline)
         .scrollDismissesKeyboard(.immediately)
         .alert("Are you sure?", isPresented: $showingAlert) {
@@ -111,8 +115,13 @@ struct DeviceDetailView: View {
             Text("This will permanently delete this Mac from your collection.")
         }
         .toolbar {
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            ToolbarItem(placement: .bottomBar) {
+            #if os(iOS)
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            #endif
+            ToolbarItemGroup(placement: .bottomBar) {
+                #if os(watchOS)
+                    Spacer()
+                #endif
                 Button("Edit", systemImage: "pencil") {
                     isEditing.toggle()
                 }

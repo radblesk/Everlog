@@ -47,23 +47,35 @@ struct DevicesView: View {
                                 .offset(x: 20, y: 0)
                         }
                     }
+                    #if os(watchOS)
+                        .buttonStyle(.plain)
+                    #endif
                 } description: {
                     Text("Tap to add your first device")
                 }
             }
         }
         .toolbar {
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            ToolbarItem(placement: .bottomBar) {
+            #if os(iOS)
+                ToolbarSpacer(.flexible, placement: .bottomBar)
+            #endif
+            ToolbarItemGroup(placement: .bottomBar) {
+                #if os(watchOS)
+                    Spacer()
+                #endif
                 Button("Add device", systemImage: "plus") {
                     addingDevice.toggle()
                 }
-                .buttonStyle(.glassProminent)
+                #if os(iOS)
+                    .buttonStyle(.glassProminent)
+                #endif
             }
         }
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("\(currentView) Collection")
-        .navigationSubtitle("^[\(devices.count) \(currentView)](inflect: true)")
+        #if os(iOS)
+            .navigationSubtitle(devices.count > 0 ? "^[\(devices.count) \(currentView)](inflect: true)" : "")
+        #endif
         .sheet(isPresented: $addingDevice) {
             AddDeviceView(currentCategory: currentView)
         }

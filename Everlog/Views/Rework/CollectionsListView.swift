@@ -9,30 +9,25 @@ import SwiftData
 import SwiftUI
 
 struct CollectionsListView: View {
-    @EnvironmentObject var navModel: NavigationModel
+    @StateObject private var navModel = NavigationModel()
+    @Environment(\.scenePhase) private var scenePhase
+
     @Query private var devices: [StoredDeviceModel]
     @AppStorage("collectionsExpanded") var collectionsExpanded: Bool = true
     @State private var addingDevice: Bool = false
+    @State private var searchText: String = ""
 
     var body: some View {
         NavigationStack(path: $navModel.path) {
             ZStack(alignment: .top) {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
 
-                Circle()
-                    .fill(Color.accent)
-                    .offset(x: 100, y: -200)
-                    .blur(radius: 120)
-                    .opacity(0.2)
-                    .ignoresSafeArea()
-
-                Circle()
-                    .fill(Color.purple)
-                    .offset(x: -200, y: -100)
-                    .blur(radius: 120)
-                    .opacity(0.15)
-                    .ignoresSafeArea()
+                RadialGradient(
+                    colors: [.accentColor.opacity(0.15), Color(.systemGroupedBackground)],
+                    center: .bottom,
+                    startRadius: 100,
+                    endRadius: 800
+                )
+                .ignoresSafeArea()
 
                 List {
                     Section(isExpanded: $collectionsExpanded.animation()) {
@@ -55,7 +50,10 @@ struct CollectionsListView: View {
 
                         Text("Collections")
                     }
-                    .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.7))
+                    .listRowBackground(
+                        Rectangle()
+                            .fill(.ultraThinMaterial)
+                    )
                 }
                 .sheet(isPresented: $addingDevice) {
                     AddDeviceView(currentCategory: "")
@@ -89,7 +87,7 @@ struct CollectionsListView: View {
                             Image(systemName: "person")
                         }
                     }
-
+                    DefaultToolbarItem(kind: .search, placement: .bottomBar)
                     ToolbarSpacer(.flexible, placement: .bottomBar)
                     ToolbarItem(placement: .bottomBar) {
                         Button("Add Device", systemImage: "plus") {
@@ -100,7 +98,29 @@ struct CollectionsListView: View {
                 }
             }
         }
+        .searchable(text: $searchText) {
+            let results = devices.filter { $0.macName.localizedStandardContains(searchText) }
 
+            if results.isEmpty && !searchText.isEmpty {
+                ContentUnavailableView(
+                    "No results for \"\(searchText)\"",
+                    systemImage: "magnifyingglass",
+                    description: Text("Check your spelling or try aagain with a different search term")
+                )
+            } else {
+                ForEach(results) { device in
+                    NavigationLink(value: device) {
+                        DeviceCard(device: device)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .background {
+                navModel.save()
+            }
+        }
     }
 
     func deviceCount(for option: NavigationOptions) -> Int {
