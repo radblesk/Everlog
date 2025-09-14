@@ -12,8 +12,8 @@ import SwiftData
 struct EverlogApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            CollectionsListView()
         }
-        .modelContainer(for: [Mac.self])
+        .modelContainer(for: StoredDeviceModel.self)
     }
 }
