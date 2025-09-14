@@ -12,65 +12,81 @@ struct DevicesView: View {
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject var navModel: NavigationModel
     @Query private var devices: [StoredDeviceModel]
-    @Binding var addingDevice: Bool
-    var category: String
-    var contains: String
+
+    @State private var addingDevice: Bool = false
+    var currentView: String
+    var currentSymbol: String
 
     var body: some View {
-        if !devices.isEmpty {
-            List {
-                ForEach(Array(Set(devices.compactMap(\.model))).sorted(), id: \.self) { model in
-                    Section(model) {
-                        ForEach(devices.filter { $0.model == model }) { mac in
-                            NavigationLink(value: mac) {
-                                DeviceCard(query: contains, device: mac)
+        Group {
+            if !devices.isEmpty {
+                List {
+                    ForEach(Array(Set(devices.compactMap(\.model))).sorted(), id: \.self) { model in
+                        Section(model) {
+                            ForEach(devices.filter { $0.model == model }) { device in
+                                NavigationLink(value: device) {
+                                    DeviceCard(device: device)
+                                }
                             }
+                            .onDelete(perform: deleteMac)
                         }
-                        .onDelete(perform: deleteMac)
                     }
                 }
-            }
-            .scrollDismissesKeyboard(.immediately)
-            .navigationTitle("\(category) Collection")
-            .navigationDestination(for: StoredDeviceModel.self) { device in
-                DeviceDetailView(device: device)
-            }
-        } else {
-            if contains.isEmpty {
+            } else {
                 ContentUnavailableView {
                     Button {
                         addingDevice.toggle()
                     } label: {
-                        Label("No \(inflection(of: category))", systemImage: categorySymbol())
+                        ZStack {
+                            Label("No \(currentView) devices", systemImage: currentSymbol)
+                            Image(systemName: "plus")
+                                .imageScale(.small)
+                                .padding(6)
+                                .background(.ultraThinMaterial)
+                                .clipShape(.circle)
+                                .offset(x: 20, y: 0)
+                        }
                     }
                 } description: {
-                    Text("Tap to add \(category) to your collection")
+                    Text("Tap to add your first device")
                 }
-            } else {
-                ContentUnavailableView("No results for \"\(contains)\"", systemImage: "magnifyingglass", description: Text("Check for typos or try a different search"))
             }
         }
+        .toolbar {
+            ToolbarSpacer(.flexible, placement: .bottomBar)
+            ToolbarItem(placement: .bottomBar) {
+                Button("Add device", systemImage: "plus") {
+                    addingDevice.toggle()
+                }
+                .buttonStyle(.glassProminent)
+            }
+        }
+        .scrollDismissesKeyboard(.immediately)
+        .navigationTitle("\(currentView) Collection")
+        .sheet(isPresented: $addingDevice) {
+            AddDeviceView(currentCategory: currentView)
+        }
+    }
+
+    init(
+        sortOrder: [SortDescriptor<StoredDeviceModel>],
+        filter: Predicate<StoredDeviceModel>,
+        currentView: String,
+        currentSymbol: String
+    ) {
+        _devices = Query(
+            filter: filter,
+            sort: sortOrder
+        )
+
+        self.currentView = currentView
+        self.currentSymbol = currentSymbol
     }
 
     func deleteMac(at offsets: IndexSet) {
         for offset in offsets {
             let mac = devices[offset]
             modelContext.delete(mac)
-        }
-    }
-
-    func categorySymbol() -> String {
-        switch category {
-        case "Mac": return "desktopcomputer.and.macbook"
-        case "iPhone": return "iphone"
-        case "iPad": return "ipad"
-        case "Apple Watch": return "applewatch"
-        case "AirPods": return "airpodspro"
-        case "Apple TV": return "appletv"
-        case "iPod": return "ipod"
-        case "HomePod": return "homepod.and.homepod.mini.badge.plus"
-        case "Apple Vision": return "vision.pro"
-        default: return "questionmark"
         }
     }
 
@@ -85,43 +101,17 @@ struct DevicesView: View {
             return string + "s"
         }
     }
-
-    init(addingDevice: Binding<Bool>, category: String, contains: String) {
-        if contains.isEmpty {
-            _devices = Query(
-                filter: #Predicate<StoredDeviceModel> { device in device.category == category
-                },
-                sort: [
-                    SortDescriptor(\.purchaseDate, order: .reverse),
-                    SortDescriptor(\.model),
-                    SortDescriptor(\.releaseDate),
-                ]
-            )
-        } else {
-            _devices = Query(
-                filter: #Predicate<StoredDeviceModel> { device in
-                    device.model.localizedStandardContains(contains)
-                        || device.comments.localizedStandardContains(contains)
-                },
-                sort: [
-                    SortDescriptor(\.purchaseDate, order: .reverse),
-                    SortDescriptor(\.model),
-                    SortDescriptor(\.releaseDate),
-                ]
-            )
-        }
-
-        _addingDevice = addingDevice
-        self.category = category
-        self.contains = contains
-    }
 }
 
 #Preview {
-    @Previewable @StateObject var navModel = NavigationModel()
     NavigationStack {
-        DevicesView(addingDevice: .constant(true), category: "Mac", contains: "")
-            .modelContainer(for: StoredDeviceModel.self)
-            .environmentObject(navModel)
+        DevicesView(
+            sortOrder: [SortDescriptor(\StoredDeviceModel.purchaseDate)],
+            filter: Predicate<StoredDeviceModel>.true,
+            currentView: "iPhone",
+            currentSymbol: "appletv.fill"
+        )
+        .modelContainer(for: StoredDeviceModel.self, inMemory: true)
+        .environmentObject(NavigationModel())
     }
 }

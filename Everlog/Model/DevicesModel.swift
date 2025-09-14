@@ -99,6 +99,7 @@ struct DevicesData {
         serialNumber: "FYF897A7F1",
         currentCondition: "Perfect",
         comments: "",
+        lastModified: .now,
         color: "Space Black",
         chip: "M4 Pro",
         memory: "24GB",

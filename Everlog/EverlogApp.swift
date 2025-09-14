@@ -10,10 +10,13 @@ import SwiftData
 
 @main
 struct EverlogApp: App {
+    @StateObject private var navModel = NavigationModel()
+    
     var body: some Scene {
         WindowGroup {
             CollectionsListView()
         }
+        .environmentObject(navModel)
         .modelContainer(for: StoredDeviceModel.self)
     }
 }

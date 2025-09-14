@@ -18,18 +18,10 @@ struct DeviceDetailView: View {
     @State private var isEditing: Bool = false
     @State private var showingAlert: Bool = false
 
-    private var macName: String {
-        if !device.displaySize.isEmpty {
-            return "\(device.model) \(device.displaySize)"
-        }
-
-        return device.model
-    }
-
     var body: some View {
         Form {
             Section {
-                DeviceCard(query: "", device: device)
+                DeviceCard(device: device)
             }
 
             Section {
@@ -109,8 +101,9 @@ struct DeviceDetailView: View {
                 }
             }
         }
-        .navigationTitle(macName)
+        .navigationTitle(device.macName)
         .navigationSubtitle(device.color.capitalized)
+        .navigationBarTitleDisplayMode(.inline)
         .scrollDismissesKeyboard(.immediately)
         .alert("Are you sure?", isPresented: $showingAlert) {
             Button("Delete", role: .destructive, action: deleteMac)

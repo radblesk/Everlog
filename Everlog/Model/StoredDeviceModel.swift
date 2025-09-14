@@ -27,6 +27,8 @@ class StoredDeviceModel {
         return model
     }
 
+    var lastModified: Date = Date.now
+
     var symbol: String {
         switch model {
         case let mb where mb.contains("MacBook"): return "macbook"
@@ -127,6 +129,7 @@ class StoredDeviceModel {
         serialNumber: String,
         currentCondition: String,
         comments: String,
+        lastModified: Date,
         color: String,
         chip: String,
         memory: String,
@@ -155,6 +158,7 @@ class StoredDeviceModel {
         self.serialNumber = serialNumber
         self.currentCondition = currentCondition
         self.comments = comments
+        self.lastModified = lastModified
         self.color = color
         self.chip = chip
         self.memory = memory
