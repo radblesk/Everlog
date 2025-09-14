@@ -63,6 +63,7 @@ struct DevicesView: View {
         }
         .scrollDismissesKeyboard(.immediately)
         .navigationTitle("\(currentView) Collection")
+        .navigationSubtitle("^[\(devices.count) \(currentView)](inflect: true)")
         .sheet(isPresented: $addingDevice) {
             AddDeviceView(currentCategory: currentView)
         }
