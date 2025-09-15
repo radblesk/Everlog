@@ -25,7 +25,7 @@ struct DevicesView: View {
                         Section(model) {
                             ForEach(devices.filter { $0.model == model }) { device in
                                 NavigationLink(value: device) {
-                                    DeviceCard(device: device)
+                                    DeviceCard(query: "", device: device)
                                 }
                             }
                             .onDelete(perform: deleteMac)

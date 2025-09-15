@@ -50,6 +50,7 @@
 		F9C9FBF32E77385A00A293FC /* Exceptions for "Everlog" folder in "Everlog for watchOS Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				"Enums & Helpers/ColorToString.swift",
 				"Enums & Helpers/NavigationOptions.swift",
 				"Enums & Helpers/ProductColor.swift",
 				Model/DevicesModel.swift,
@@ -63,6 +64,7 @@
 				Views/Device/PurchaseDetailsView.swift,
 				Views/Device/WarrantyView.swift,
 				Views/DevicesView.swift,
+				Views/UserSettingsView.swift,
 			);
 			target = F9C9FBDC2E77382D00A293FC /* Everlog for watchOS Watch App */;
 		};

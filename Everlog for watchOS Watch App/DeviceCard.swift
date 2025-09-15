@@ -9,6 +9,7 @@ import SwiftUI
 import UIKit
 
 struct DeviceCard: View {
+    let query: String
     let device: StoredDeviceModel
 
     var body: some View {
@@ -74,6 +75,6 @@ struct DeviceCard: View {
 
 #Preview {
     List {
-        DeviceCard(device: DevicesData.example)
+        DeviceCard(query: "", device: DevicesData.example)
     }
 }

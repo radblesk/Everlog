@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 struct DeviceCard: View {
-    //    let query: String
+    let query: String
     let device: StoredDeviceModel
 
     var body: some View {
@@ -27,7 +27,7 @@ struct DeviceCard: View {
                         .symbolRenderingMode(.hierarchical)
                         .foregroundStyle(Color.accentColor)
                         .frame(width: 72, height: 72, alignment: .center)
-                        .background(.ultraThinMaterial)
+                        .background(.ultraThickMaterial)
                         .clipShape(.rect(cornerRadius: 12))
                         .contentTransition(
                             .symbolEffect(
@@ -38,13 +38,13 @@ struct DeviceCard: View {
 
                     Circle()
                         .fill(.clear)
-                        .frame(width: 18, height: 18)
+                        .frame(width: 14, height: 14)
                         .glassEffect(.regular.tint(deviceColor))
-                        .offset(x: 6, y: -6)
+                        .offset(x: 4, y: -4)
                 }
 
                 VStack(alignment: .leading) {
-                    Text(device.macName)
+                    Text(highlightedAttributedString(text: device.macName, search: query))
                         .font(.headline)
 
                     HStack(spacing: 0) {
@@ -80,7 +80,7 @@ struct DeviceCard: View {
                 Divider()
 
                 VStack {
-                    Text(device.comments)
+                    Text(highlightedAttributedString(text: device.comments, search: query))
                 }
                 .padding(.top, 4)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,39 +90,39 @@ struct DeviceCard: View {
         }
     }
 
-    //    func highlightedAttributedString(
-    //        text: String,
-    //        search: String,
-    //        highlightColor: UIColor = .tintColor,
-    //        baseFont: UIFont = UIFont.preferredFont(forTextStyle: .body)
-    //    ) -> AttributedString {
-    //        guard !search.isEmpty else { return AttributedString(text) }
-    //
-    //        let ns = text as NSString
-    //        let mutable = NSMutableAttributedString(string: text)
-    //        let fullRange = NSRange(location: 0, length: ns.length)
-    //
-    //        // base attributes (so non-highlighted text looks correct)
-    //        mutable.addAttribute(.font, value: baseFont, range: fullRange)
-    //        // optional: mutable.addAttribute(.foregroundColor, value: UIColor.label, range: fullRange)
-    //
-    //        let matches = text.nsRanges(of: search)
-    //        for r in matches {
-    //            // bold the match
-    //            let currentFont = (mutable.attribute(.font, at: r.location, effectiveRange: nil) as? UIFont) ?? baseFont
-    //            let boldDescriptor = currentFont.fontDescriptor.withSymbolicTraits(.traitBold) ?? currentFont.fontDescriptor
-    //            let bold = UIFont(descriptor: boldDescriptor, size: currentFont.pointSize)
-    //
-    //            mutable.addAttributes([.foregroundColor: highlightColor, .font: bold], range: r)
-    //        }
-    //
-    //        // convert to Swift's AttributedString
-    //        if let attr = try? AttributedString(mutable) {
-    //            return attr
-    //        } else {
-    //            return AttributedString(text)
-    //        }
-    //    }
+    func highlightedAttributedString(
+        text: String,
+        search: String,
+        highlightColor: UIColor = .tintColor,
+        baseFont: UIFont = UIFont.preferredFont(forTextStyle: .body)
+    ) -> AttributedString {
+        guard !search.isEmpty else { return AttributedString(text) }
+
+        let ns = text as NSString
+        let mutable = NSMutableAttributedString(string: text)
+        let fullRange = NSRange(location: 0, length: ns.length)
+
+        // base attributes (so non-highlighted text looks correct)
+        mutable.addAttribute(.font, value: baseFont, range: fullRange)
+        // optional: mutable.addAttribute(.foregroundColor, value: UIColor.label, range: fullRange)
+
+        let matches = text.nsRanges(of: search)
+        for r in matches {
+            // bold the match
+            let currentFont = (mutable.attribute(.font, at: r.location, effectiveRange: nil) as? UIFont) ?? baseFont
+            let boldDescriptor = currentFont.fontDescriptor.withSymbolicTraits(.traitBold) ?? currentFont.fontDescriptor
+            let bold = UIFont(descriptor: boldDescriptor, size: currentFont.pointSize)
+
+            mutable.addAttributes([.foregroundColor: highlightColor, .font: bold], range: r)
+        }
+
+        // convert to Swift's AttributedString
+        if let attr = try? AttributedString(mutable) {
+            return attr
+        } else {
+            return AttributedString(text)
+        }
+    }
 }
 
 extension String {
@@ -147,6 +147,6 @@ extension String {
 
 #Preview {
     List {
-        DeviceCard(device: DevicesData.example)
+        DeviceCard(query: "o", device: DevicesData.example)
     }
 }

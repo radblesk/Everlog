@@ -44,29 +44,15 @@ struct EditDeviceView: View {
     @State private var storage: String = ""
 
     var body: some View {
-        let operatingSystems = data.categories.first(where: { $0.name == category })?.operatingSystems.reversed() ?? []
-
         Form {
             if let device = data.deviceData(for: editedDevice.model) {
                 Section(header: Text("Device Details")) {
                     DatePicker("Release Date", selection: $editedDevice.releaseDate, displayedComponents: .date)
 
-                    Picker("\(determineOS()) version", selection: $editedDevice.osVersion) {
-                        ForEach(operatingSystems) { system in
-                            Section(system.name) {
-                                if !system.releases.isEmpty {
-                                    ForEach(
-                                        system.releases.sorted { $0 > $1 },
-                                        id: \.self
-                                    ) { system in
-                                        Text(system)
-                                    }
-                                } else {
-                                    Text("No versions available")
-                                }
-                            }
-                        }
-                    }
+                    TextField("\(determineOS()) version", text: $editedDevice.osVersion)
+                        #if os(iOS)
+                            .keyboardType(.numbersAndPunctuation)
+                        #endif
 
                     TextField("Serial Number", text: $editedDevice.serialNumber)
 
@@ -76,6 +62,7 @@ struct EditDeviceView: View {
                                 .tag(option)
                         }
                     }
+                    .tint(.secondary)
 
                     TextField("Comment", text: $editedDevice.comments, axis: .vertical)
                 }
@@ -133,17 +120,22 @@ struct EditDeviceView: View {
                             .multilineTextAlignment(.trailing)
                     }
                 }
+                .tint(.secondary)
 
                 Section(
                     header: Text("Purchase Details")
                 ) {
                     DatePicker("Purchased", selection: $editedDevice.purchaseDate, displayedComponents: .date)
+
                     TextField("Store", text: $editedDevice.purchasedFrom)
+
                     Picker("Condition", selection: $editedDevice.purchasedCondition) {
                         ForEach(device.purchaseCondition, id: \.self) {
                             Text($0)
                         }
                     }
+                    .tint(.secondary)
+
                     HStack {
                         Text("Price")
                         Spacer()
@@ -230,6 +222,7 @@ struct EditDeviceView: View {
         }
         .toolbar {
             Button("Save", action: saveDevice)
+                .tint(.primary)
         }
     }
 

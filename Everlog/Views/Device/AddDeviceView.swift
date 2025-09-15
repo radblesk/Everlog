@@ -58,7 +58,7 @@ struct AddDeviceView: View {
                     .onChange(of: category) {
                         model = data.deviceCategories(in: category).flatMap(\.devices).last?.name ?? ""
                     }
-                    
+
                     Picker("Model", selection: $model) {
                         ForEach(data.deviceCategories(in: category)) { category in
                             Section(category.name) {
@@ -78,7 +78,7 @@ struct AddDeviceView: View {
                             price = 0.0
                             extendedWarranty = false
                             appleCare = false
-                            
+
                             /// Reset device details
                             if let date = device.releaseDate {
                                 releaseDate = date
@@ -87,7 +87,7 @@ struct AddDeviceView: View {
                             }
                             osVersion = !releases.isEmpty ? releases[0] : "Unknown"
                             serialNumber = ""
-                            
+
                             /// Set default values for hardware config of selected device
                             displaySize = device.displaySizes?.first ?? ""
                             color = device.colors[0].name
@@ -97,34 +97,22 @@ struct AddDeviceView: View {
                         // set values
                     }
                 }
-                
+                .tint(.secondary)
+
                 if let device = data.deviceData(for: model) {
                     Section(header: Text("Device Details")) {
                         DatePicker("Release Date", selection: $releaseDate, in: ...Date.now, displayedComponents: .date)
-                        
-                        //                    TextField("\(determineOS()) version", text: $osVersion)
-                        Picker("\(determineOS()) version", selection: $osVersion) {
-                            ForEach(operatingSystems) { system in
-                                Section(system.name) {
-                                    if !system.releases.isEmpty {
-                                        ForEach(
-                                            system.releases.sorted { $0 > $1 },
-                                            id: \.self
-                                        ) { system in
-                                            Text(system)
-                                        }
-                                    } else {
-                                        Text("No versions available")
-                                    }
-                                }
-                            }
-                        }
-                        
+
+                        TextField("\(determineOS()) version", text: $osVersion)
+                            #if os(iOS)
+                                .keyboardType(.numbersAndPunctuation)
+                            #endif
+
                         TextField("Serial Number", text: $serialNumber)
-                        
+
                         TextField("Comment (optional)", text: $comment, axis: .vertical)
                     }
-                    
+
                     Section(
                         header: HStack {
                             Text("Hardware Configuration")
@@ -145,7 +133,7 @@ struct AddDeviceView: View {
                             }
                             .disabled(sizes.count < 2)
                         }
-                        
+
                         Picker("Color", selection: $color) {
                             ForEach(device.colors) {
                                 Text($0.name)
@@ -153,7 +141,7 @@ struct AddDeviceView: View {
                             }
                         }
                         .disabled(device.colors.count < 2)
-                        
+
                         Picker("Chip", selection: $chip) {
                             ForEach(device.chipFamilies) { family in
                                 Section(family.name) {
@@ -164,7 +152,7 @@ struct AddDeviceView: View {
                             }
                         }
                         .disabled(device.chipFamilies.flatMap(\.chips).count < 2)
-                        
+
                         if let options = device.memoryOptions, !options[0].isEmpty {
                             Picker("Memory", selection: $memory) {
                                 ForEach(options, id: \.self) { option in
@@ -174,7 +162,7 @@ struct AddDeviceView: View {
                             }
                             .disabled(options.count < 2)
                         }
-                        
+
                         if !device.name.contains("AirPods") {
                             HStack {
                                 Text("Storage")
@@ -184,17 +172,22 @@ struct AddDeviceView: View {
                             }
                         }
                     }
-                    
+                    .tint(.secondary)
+
                     Section(
                         header: Text("Purchase Details")
                     ) {
                         DatePicker("Purchased", selection: $acquiredDate, in: ...Date.now, displayedComponents: .date)
+
                         TextField("Store", text: $purchasedFrom)
+
                         Picker("Condition", selection: $purchaseCondition) {
                             ForEach(device.purchaseCondition, id: \.self) {
                                 Text($0)
                             }
                         }
+                        .tint(.secondary)
+
                         HStack {
                             Text("Price")
                             Spacer()
@@ -206,7 +199,7 @@ struct AddDeviceView: View {
                             .multilineTextAlignment(.trailing)
                         }
                     }
-                    
+
                     Section(
                         header: Text("AppleCare & Warranty"),
                         footer: Text(
@@ -226,7 +219,7 @@ struct AddDeviceView: View {
                                 in: 2...3
                             )
                         }
-                        
+
                         Toggle("AppleCare+", isOn: $appleCare)
                             .onChange(of: appleCare) { oldValue, newValue in
                                 if newValue {
@@ -241,7 +234,7 @@ struct AddDeviceView: View {
                             )
                         }
                     }
-                    
+
                     Section(
                         header: Text("Trade In"),
                         footer: Text(
@@ -249,7 +242,7 @@ struct AddDeviceView: View {
                         )
                     ) {
                         Toggle("Trade In", isOn: $tradedIn)
-                        
+
                         if tradedIn {
                             HStack {
                                 Text("Device")
@@ -257,7 +250,7 @@ struct AddDeviceView: View {
                                 TextField("iPhone 13", text: $tradedInDevice)
                                     .multilineTextAlignment(.trailing)
                             }
-                            
+
                             HStack {
                                 Text("Price")
                                 Spacer()
@@ -268,7 +261,7 @@ struct AddDeviceView: View {
                                 )
                                 .multilineTextAlignment(.trailing)
                             }
-                            
+
                         }
                     }
                 }
@@ -284,7 +277,8 @@ struct AddDeviceView: View {
                 }
             }
             .toolbar {
-                Button("Save", action: saveDevice)
+                Button("Add", action: saveDevice)
+                    .tint(.primary)
             }
         }
     }

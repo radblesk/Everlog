@@ -21,7 +21,7 @@ struct DeviceDetailView: View {
     var body: some View {
         Form {
             Section {
-                DeviceCard(device: device)
+                DeviceCard(query: "",device: device)
             }
 
             Section {
@@ -125,6 +125,7 @@ struct DeviceDetailView: View {
                 Button("Edit", systemImage: "pencil") {
                     isEditing.toggle()
                 }
+                .tint(.secondary)
             }
             if priceFocused {
                 ToolbarItem {
