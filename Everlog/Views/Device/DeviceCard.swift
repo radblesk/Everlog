@@ -13,9 +13,10 @@ struct DeviceCard: View {
     let device: StoredDeviceModel
 
     var body: some View {
-        let deviceColor = DevicesData().categories.flatMap(\.deviceCategories).flatMap(\.devices).first(where: {
-            $0.name == device.model
-        })?.colors.first(where: { $0.name == device.color })?.color
+        let deviceColor = DevicesData().categories.flatMap(\.deviceCategories)
+            .flatMap(\.devices).first(where: {
+                $0.name == device.model
+            })?.colors.first(where: { $0.name == device.color })?.color
 
         VStack(alignment: .leading) {
             HStack(spacing: 12) {
@@ -44,8 +45,13 @@ struct DeviceCard: View {
                 }
 
                 VStack(alignment: .leading) {
-                    Text(highlightedAttributedString(text: device.macName, search: query))
-                        .font(.headline)
+                    Text(
+                        highlightedAttributedString(
+                            text: device.macName,
+                            search: query
+                        )
+                    )
+                    .font(.headline)
 
                     HStack(spacing: 0) {
                         Text(device.releaseDate.formatted(.dateTime.year()))
@@ -80,7 +86,12 @@ struct DeviceCard: View {
                 Divider()
 
                 VStack {
-                    Text(highlightedAttributedString(text: device.comments, search: query))
+                    Text(
+                        highlightedAttributedString(
+                            text: device.comments,
+                            search: query
+                        )
+                    )
                 }
                 .padding(.top, 4)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -90,6 +101,13 @@ struct DeviceCard: View {
         }
     }
 
+    /// Highlight text based on search input
+    /// - Parameters:
+    ///   - text: A string that is going to be highlighted
+    ///   - search: A search string
+    ///   - highlightColor: Color of highlighted string
+    ///   - baseFont: Text style
+    /// - Returns: An AttributedString with highlighted letters that match search string
     func highlightedAttributedString(
         text: String,
         search: String,
@@ -102,31 +120,39 @@ struct DeviceCard: View {
         let mutable = NSMutableAttributedString(string: text)
         let fullRange = NSRange(location: 0, length: ns.length)
 
-        // base attributes (so non-highlighted text looks correct)
         mutable.addAttribute(.font, value: baseFont, range: fullRange)
-        // optional: mutable.addAttribute(.foregroundColor, value: UIColor.label, range: fullRange)
 
         let matches = text.nsRanges(of: search)
         for r in matches {
             // bold the match
-            let currentFont = (mutable.attribute(.font, at: r.location, effectiveRange: nil) as? UIFont) ?? baseFont
-            let boldDescriptor = currentFont.fontDescriptor.withSymbolicTraits(.traitBold) ?? currentFont.fontDescriptor
-            let bold = UIFont(descriptor: boldDescriptor, size: currentFont.pointSize)
+            let currentFont =
+                (mutable.attribute(.font, at: r.location, effectiveRange: nil)
+                    as? UIFont) ?? baseFont
+            let boldDescriptor =
+                currentFont.fontDescriptor.withSymbolicTraits(.traitBold)
+                ?? currentFont.fontDescriptor
+            let bold = UIFont(
+                descriptor: boldDescriptor,
+                size: currentFont.pointSize
+            )
 
-            mutable.addAttributes([.foregroundColor: highlightColor, .font: bold], range: r)
+            mutable.addAttributes(
+                [.foregroundColor: highlightColor, .font: bold],
+                range: r
+            )
         }
 
-        // convert to Swift's AttributedString
-        if let attr = try? AttributedString(mutable) {
-            return attr
-        } else {
-            return AttributedString(text)
-        }
+        return AttributedString(mutable)
     }
 }
 
 extension String {
-    func nsRanges(of search: String, options: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive])
+    func nsRanges(
+        of search: String,
+        options: String.CompareOptions = [
+            .caseInsensitive, .diacriticInsensitive,
+        ]
+    )
         -> [NSRange]
     {
         let ns = self as NSString
@@ -134,12 +160,19 @@ extension String {
         var searchRange = NSRange(location: 0, length: ns.length)
 
         while true {
-            let found = ns.range(of: search, options: options, range: searchRange)
+            let found = ns.range(
+                of: search,
+                options: options,
+                range: searchRange
+            )
             if found.location == NSNotFound { break }
             ranges.append(found)
             let newLocation = found.location + found.length
             if newLocation >= ns.length { break }
-            searchRange = NSRange(location: newLocation, length: ns.length - newLocation)
+            searchRange = NSRange(
+                location: newLocation,
+                length: ns.length - newLocation
+            )
         }
         return ranges
     }
